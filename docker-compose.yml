@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    ports:
+      - "8883:8883"  # MQTT over TLS
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/certs:/mosquitto/certs
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+    restart: unless-stopped
+
+  mqtt-client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    volumes:
+      - ./mosquitto/certs:/certs
+    depends_on:
+      - mosquitto
